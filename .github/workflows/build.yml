@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  workflow_dispatch: # lets you trigger it manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
@@ -21,6 +21,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -31,16 +34,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Grant execute permission to gradlew
-        run: chmod +x gradlew
-
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon
+        run: gradle build --no-daemon
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: donutsmp-ultimate
-          # Excludes the -sources and -dev jars, just the clean mod jar
           path: build/libs/donutsmp-ultimate-*.jar
           if-no-files-found: error
