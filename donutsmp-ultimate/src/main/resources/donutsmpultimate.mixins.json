@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.donutsmpultimate.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "EntityRendererMixin",
+    "GameRendererMixin",
+    "BlockRenderManagerMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "ScreenHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
