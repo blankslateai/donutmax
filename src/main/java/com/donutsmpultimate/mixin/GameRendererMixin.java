@@ -5,23 +5,23 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyReturnValue;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Multiplies the returned FOV value when zoom is active.
+ * Uses @Inject + CallbackInfoReturnable instead of @ModifyReturnValue
+ * for compatibility with the Mixin version bundled in Fabric Loader 0.16.
  */
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    @ModifyReturnValue(
-        method = "getFov",
-        at = @At("RETURN")
-    )
-    private double onGetFov(double original) {
+    @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
+    private void onGetFov(Camera camera, float tickDelta, boolean changingFov,
+                          CallbackInfoReturnable<Double> cir) {
         ZoomFeature zoom = ZoomFeature.getInstance();
         if (zoom.isZooming()) {
-            return original * zoom.getFovMultiplier();
+            cir.setReturnValue(cir.getReturnValue() * zoom.getFovMultiplier());
         }
-        return original;
     }
 }
